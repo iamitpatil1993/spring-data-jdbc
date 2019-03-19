@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jndi.JndiObjectFactoryBean;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -82,5 +83,21 @@ public class DataSourceConfig {
 		// but for now, sticking to defaults.
 		// read more about hikariCP at https://github.com/brettwooldridge/HikariCP
 		return new HikariDataSource(config);
+	}
+	
+	@Bean
+	@Profile("dev")
+	public DataSource driverManagerDataSource() {
+		// this is one of the spring DataSource implementation, we could have used other implementations as well, like 
+		// SingleConnectionDataSource, SimpleDataSource.
+		DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
+		driverManagerDataSource.setDriverClassName(environment.getProperty("datasource.driver.classname"));
+		driverManagerDataSource.setUrl(environment.getProperty("datasource.url"));
+		driverManagerDataSource.setUsername(environment.getProperty("datasource.username"));
+		driverManagerDataSource.setPassword(environment.getProperty("datasource.password"));
+		
+		// since, it does not provides connection pooling, we do not need to set any connection pool related properties as we do in
+		// pooled connection datasources like HikariCP
+		return driverManagerDataSource;
 	}
 }
