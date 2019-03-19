@@ -5,12 +5,17 @@ package com.example.spring.data.jdbc.config;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.jndi.JndiObjectFactoryBean;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * <p>
@@ -38,6 +43,9 @@ public class DataSourceConfig {
 	
 	@Value("${datasource.jndi.name}")
 	private String dataSourceJndiName;
+	
+	@Autowired
+	private Environment environment;
 
 	@Bean
 	@Profile("prod")
@@ -60,5 +68,19 @@ public class DataSourceConfig {
 		/*DataSource dataSource = jndiObjectFactoryBean.getObject();
 		return dataSource;*/
 		return jndiObjectFactoryBean;
+	}
+	
+	@Bean
+	@Profile("int")
+	public DataSource hikariCpDataSource() {
+		HikariConfig config = new HikariConfig();
+		config.setJdbcUrl(environment.getProperty("datasource.url"));
+		config.setUsername(environment.getProperty("datasource.username"));
+		config.setPassword(environment.getProperty("datasource.password"));
+		
+		// NOTE: We do not need to specify jdbc driver class name here.HikarCP manages its. There are lots of other configurations we can set,
+		// but for now, sticking to defaults.
+		// read more about hikariCP at https://github.com/brettwooldridge/HikariCP
+		return new HikariDataSource(config);
 	}
 }
