@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jndi.JndiObjectFactoryBean;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -99,5 +101,11 @@ public class DataSourceConfig {
 		// since, it does not provides connection pooling, we do not need to set any connection pool related properties as we do in
 		// pooled connection datasources like HikariCP
 		return driverManagerDataSource;
+	}
+	
+	@Bean
+	@Profile("test")
+	public DataSource embeddedDataSource() {
+		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
 	}
 }
