@@ -106,6 +106,6 @@ public class DataSourceConfig {
 	@Bean
 	@Profile("test")
 	public DataSource embeddedDataSource() {
-		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
+		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript("classpath:schema.sql").build();
 	}
 }
