@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -28,11 +28,12 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeDaoImpl.class);
 
-	private JdbcTemplate jdbcTemplate;
+	// JdbcTemplate is implementation of JdbcOperations, we should have dependency on interface always.
+	private JdbcOperations jdbcTemplate; 
 
 	// Always prefer constructor/setter based injection, which helps in test case injection.
 	@Autowired
-	public EmployeeDaoImpl(JdbcTemplate jdbcTemplate) {
+	public EmployeeDaoImpl(JdbcOperations jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
