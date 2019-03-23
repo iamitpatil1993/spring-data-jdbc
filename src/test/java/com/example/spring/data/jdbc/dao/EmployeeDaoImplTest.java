@@ -107,4 +107,36 @@ public class EmployeeDaoImplTest extends BaseTest {
 		assertNotNull(employees);
 		assertFalse(employees.isEmpty());
 	}
+	
+	/**
+	 * Test method for
+	 * {@link com.example.spring.data.jdbc.dao.EmployeeDaoImpl#update(com.example.spring.data.jdbc.dto.Employee)}.
+	 */
+	@Test(expected = InsufficientDataException.class)
+	public void testUpdateWithEmptyEmployeeId() {
+		// when
+		employeeDao.update(new Employee());
+	}
+	
+	/**
+	 * Test method for
+	 * {@link com.example.spring.data.jdbc.dao.EmployeeDaoImpl#update(com.example.spring.data.jdbc.dto.Employee)}.
+	 */
+	@Test()
+	public void testUpdate() {
+		Employee employee = new Employee();
+		employee.setEmployeeId(employeeId);
+		employee.setFirstName("Amit");
+		employee.setLastName("Patil");
+		
+		// when
+		employeeDao.update(employee);
+		
+		// then
+		Optional<Employee> employeeOptional = employeeDao.get(employeeId);
+		assertNotNull(employeeOptional);
+		assertTrue(employeeOptional.isPresent());
+		assertEquals(employee.getFirstName(), employeeOptional.get().getFirstName());
+		assertEquals(employee.getLastName(), employeeOptional.get().getLastName());
+	}
 }

@@ -88,4 +88,16 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			return employee;
 		}
 	}
+	
+	@Override
+	public Employee update(Employee employee) {
+		if (employee.getEmployeeId() == null) {
+			throw new InsufficientDataException("Empty employeeId while updating employee.");
+		}
+		int rowsUpdated = jdbcTemplate.update(SqlStore.UPDTAE_EMPLOYEE_BY_ID, employee.getFirstName(),
+				employee.getLastName(), employee.getDesignation(), employee.getEmployeeId());
+
+		LOGGER.info("Updated with employee with ID :: {}, update Count :: {}", employee.getEmployeeId(), rowsUpdated);
+		return employee;
+	}
 }

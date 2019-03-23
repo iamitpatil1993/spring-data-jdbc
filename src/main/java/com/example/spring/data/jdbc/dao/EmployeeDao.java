@@ -20,5 +20,7 @@ public interface EmployeeDao {
 	public Optional<Employee> get(final String employeeId);
 	
 	public List<Employee> findAll();
+	
+	public Employee update(Employee employee);
 
 }

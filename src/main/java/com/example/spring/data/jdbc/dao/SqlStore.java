@@ -15,5 +15,7 @@ public abstract class SqlStore {
 	public static final String SELECT_EMPLOYEE_BY_ID = "SELECT * FROM employee WHERE employee_id = ?";
 	
 	public static final String SELECT_EMPLOYEE_ALL = "SELECT * FROM employee";
+	
+	public static final String UPDTAE_EMPLOYEE_BY_ID = "UPDATE employee set first_name = ?, last_name = ?, designation = ?, updated_date = now() WHERE employee_id = ?";
 			
 }
