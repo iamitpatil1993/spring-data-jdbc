@@ -139,4 +139,22 @@ public class EmployeeDaoImplTest extends BaseTest {
 		assertEquals(employee.getFirstName(), employeeOptional.get().getFirstName());
 		assertEquals(employee.getLastName(), employeeOptional.get().getLastName());
 	}
+	
+	/**
+	 * Test method for
+	 * {@link com.example.spring.data.jdbc.dao.EmployeeDaoImpl#delete(com.example.spring.data.jdbc.dto.Employee)}.
+	 */
+	@Test()
+	public void testWDelete() {
+		Employee employee = new Employee();
+		employee.setEmployeeId(employeeId);
+		
+		// when
+		employeeDao.delete(employee);
+		
+		// then
+		Optional<Employee> employeeOptional = employeeDao.get(employeeId);
+		assertNotNull(employeeOptional);
+		assertFalse(employeeOptional.isPresent());
+	}
 }

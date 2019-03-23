@@ -100,4 +100,13 @@ public class EmployeeDaoImpl implements EmployeeDao {
 		LOGGER.info("Updated with employee with ID :: {}, update Count :: {}", employee.getEmployeeId(), rowsUpdated);
 		return employee;
 	}
+
+	@Override
+	public void delete(Employee employee) {
+		if (employee.getEmployeeId() == null) {
+			throw new InsufficientDataException("Empty employeeId while updating employee.");
+		}
+		
+		jdbcTemplate.update(SqlStore.DELETE_EMPLOYEE_BY_ID, employee.getEmployeeId());
+	}
 }

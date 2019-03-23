@@ -22,5 +22,7 @@ public interface EmployeeDao {
 	public List<Employee> findAll();
 	
 	public Employee update(Employee employee);
+	
+	public void delete(Employee employee);
 
 }
