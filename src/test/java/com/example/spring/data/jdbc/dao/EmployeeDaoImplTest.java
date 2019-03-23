@@ -8,7 +8,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -177,5 +179,34 @@ public class EmployeeDaoImplTest extends BaseTest {
 		employees.stream().forEach(emp -> {
 			assertEquals(designation, emp.getDesignation());
 		});
+	}
+	
+	/**
+	 * Test method for
+	 * {@link com.example.spring.data.jdbc.dao.EmployeeDaoImpl#addAll(java.util.List<com.example.spring.data.jdbc.dto.Employee>)}.
+	 */
+	@Test
+	public void testAddAll() {
+		// given
+		String designation = UUID.randomUUID().toString();
+		List<Employee> employeesToAdd = new ArrayList<>(88);
+		for (int i = 0; i < 88; i++) {
+			Employee employee = new Employee();
+			employee.setFirstName(UUID.randomUUID().toString());
+			employee.setLastName(UUID.randomUUID().toString());
+			employee.setDateOfJoining(new Date());
+			employee.setDesignation(designation);
+			employeesToAdd.add(employee);
+		}
+		
+		// when
+		List<Employee> employees = employeeDao.addAll(employeesToAdd);
+	
+		// then
+		assertNotNull(employees);
+		assertFalse(employees.isEmpty());
+		assertEquals(88, employees.size());
+		List<Employee> createdEmployees = employeeDao.findAllByDesignation(designation);
+		assertEquals(employeesToAdd.size(), createdEmployees.size());
 	}
 }

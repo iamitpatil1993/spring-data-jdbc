@@ -26,5 +26,7 @@ public interface EmployeeDao {
 	public void delete(Employee employee);
 	
 	public List<Employee> findAllByDesignation(final String designation);
+	
+	public List<Employee> addAll(List<Employee> employees);
 
 }

@@ -1,5 +1,6 @@
 package com.example.spring.data.jdbc.dao;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
@@ -126,5 +128,39 @@ public class EmployeeDaoImpl implements EmployeeDao {
 		namedParameters.put("designation", designation);
 		
 		return namedParameterJdbcTemplate.query(SqlStore.SELECT_ALL_EMPLOYEE_BY_DESIGNATION, namedParameters, new EmployeeRowMapper());
+	}
+
+	@Override
+	public List<Employee> addAll(List<Employee> employees) {
+		if (employees == null) {
+			throw new InsufficientDataException();
+		}
+		// generate IDs
+		employees.stream().forEach(emp -> emp.setEmployeeId(UUID.randomUUID().toString()));
+		
+		// This JDBC api executes all statements into single batch, if we need multiple batch we, need call this method using custom batch size logic or 
+		// spring provide another API which handles that, interface we can use is ParameterizedPreparedStatementSetter with batchUpdate() overloaded version.
+		int[] rowsCreated = jdbcTemplate.batchUpdate(SqlStore.INSERT_EMPLOYEE, new BatchPreparedStatementSetter() {
+			
+			/**
+			 * index starts at 0
+			 */
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				Employee employee = employees.get(i);
+				ps.setString(1, employee.getEmployeeId());
+				ps.setString(2, employee.getFirstName());
+				ps.setString(3, employee.getLastName());
+				ps.setDate(4, new java.sql.Date(employee.getDateOfJoining().getTime()));
+				ps.setString(5, employee.getDesignation());
+			}
+
+			@Override
+			public int getBatchSize() {
+				return employees.size();
+			}
+		});
+		LOGGER.info("Employees created in batch, cout :: {}", rowsCreated);
+		return employees;
 	}
 }
