@@ -19,5 +19,7 @@ public abstract class SqlStore {
 	public static final String UPDTAE_EMPLOYEE_BY_ID = "UPDATE employee set first_name = ?, last_name = ?, designation = ?, updated_date = now() WHERE employee_id = ?";
 	
 	public static final String DELETE_EMPLOYEE_BY_ID = "DELETE FROM employee WHERE employee_id = ?";
+	
+	public static final String SELECT_ALL_EMPLOYEE_BY_DESIGNATION = "SELECT * FROM employee WHERE designation = :designation";
 			
 }

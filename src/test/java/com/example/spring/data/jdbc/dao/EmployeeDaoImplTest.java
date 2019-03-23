@@ -128,6 +128,7 @@ public class EmployeeDaoImplTest extends BaseTest {
 		employee.setEmployeeId(employeeId);
 		employee.setFirstName("Amit");
 		employee.setLastName("Patil");
+		employee.setDesignation("Member of Technical Staff");
 		
 		// when
 		employeeDao.update(employee);
@@ -156,5 +157,25 @@ public class EmployeeDaoImplTest extends BaseTest {
 		Optional<Employee> employeeOptional = employeeDao.get(employeeId);
 		assertNotNull(employeeOptional);
 		assertFalse(employeeOptional.isPresent());
+	}
+	
+	/**
+	 * Test method for
+	 * {@link com.example.spring.data.jdbc.dao.EmployeeDaoImpl#findAllByDesignation(java.lang.String)}.
+	 */
+	@Test
+	public void testFindAllByDesignation() {
+		// given
+		String designation = "Member of Technical Staff";
+		
+		// when
+		List<Employee> employees = employeeDao.findAllByDesignation("Member of Technical Staff");
+	
+		// then
+		assertNotNull(employees);
+		assertFalse(employees.isEmpty());
+		employees.stream().forEach(emp -> {
+			assertEquals(designation, emp.getDesignation());
+		});
 	}
 }

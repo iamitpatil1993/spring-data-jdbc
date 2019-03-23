@@ -3,7 +3,9 @@ package com.example.spring.data.jdbc.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 
 import com.example.spring.data.jdbc.dto.Employee;
@@ -30,11 +33,14 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
 	// JdbcTemplate is implementation of JdbcOperations, we should have dependency on interface always.
 	private JdbcOperations jdbcTemplate; 
+	
+	private NamedParameterJdbcOperations namedParameterJdbcTemplate;
 
 	// Always prefer constructor/setter based injection, which helps in test case injection.
 	@Autowired
-	public EmployeeDaoImpl(JdbcOperations jdbcTemplate) {
+	public EmployeeDaoImpl(JdbcOperations jdbcTemplate, NamedParameterJdbcOperations namedParameterJdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
+		this.namedParameterJdbcTemplate = namedParameterJdbcTemplate; 
 	}
 
 	/**
@@ -85,6 +91,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			employee.setEmployeeId(rs.getString("employee_id"));
 			employee.setFirstName(rs.getString("first_name"));
 			employee.setLastName(rs.getString("last_name"));
+			employee.setDesignation(rs.getString("designation"));
 			employee.setDateOfJoining(new Date(rs.getDate("date_of_joining").getTime()));
 			return employee;
 		}
@@ -109,5 +116,15 @@ public class EmployeeDaoImpl implements EmployeeDao {
 		}
 		
 		jdbcTemplate.update(SqlStore.DELETE_EMPLOYEE_BY_ID, employee.getEmployeeId());
+	}
+
+	@Override
+	public List<Employee> findAllByDesignation(String designation) {
+		// we need to build parameter map always, which I think verbose, and positional parameters does same job in single line.
+		// Provide JPA stle named parameters in query. (:parameName)
+		Map<String, String> namedParameters = new HashMap<String, String>(1);
+		namedParameters.put("designation", designation);
+		
+		return namedParameterJdbcTemplate.query(SqlStore.SELECT_ALL_EMPLOYEE_BY_DESIGNATION, namedParameters, new EmployeeRowMapper());
 	}
 }
