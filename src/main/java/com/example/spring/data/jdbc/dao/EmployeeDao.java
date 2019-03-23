@@ -28,5 +28,7 @@ public interface EmployeeDao {
 	public List<Employee> findAllByDesignation(final String designation);
 	
 	public List<Employee> addAll(List<Employee> employees);
+	
+	public List<Employee> importAll(List<Employee> employees);
 
 }

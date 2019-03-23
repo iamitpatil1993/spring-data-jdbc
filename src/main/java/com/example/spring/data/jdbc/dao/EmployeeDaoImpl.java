@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
@@ -32,6 +33,7 @@ import com.example.spring.data.jdbc.dto.Employee;
 public class EmployeeDaoImpl implements EmployeeDao {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeDaoImpl.class);
+	private static final int BATCH_SIZE = 10;
 
 	// JdbcTemplate is implementation of JdbcOperations, we should have dependency on interface always.
 	private JdbcOperations jdbcTemplate; 
@@ -161,6 +163,36 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			}
 		});
 		LOGGER.info("Employees created in batch, cout :: {}", rowsCreated);
+		return employees;
+	}
+
+	/**
+	 * This batch version automatically creates and handles multiple batch. we just
+	 * need to provide batch size and collection.
+	 */
+	@Override
+	public List<Employee> importAll(List<Employee> employees) {
+		if (employees == null) {
+			throw new InsufficientDataException();
+		}
+		// generate IDs
+		employees.stream().forEach(emp -> emp.setEmployeeId(UUID.randomUUID().toString()));
+
+		// we are defining batch size of 10
+		int[][] batchInsertResult = jdbcTemplate.batchUpdate(SqlStore.INSERT_EMPLOYEE, employees, BATCH_SIZE,
+				new ParameterizedPreparedStatementSetter<Employee>() {
+
+			@Override
+			public void setValues(PreparedStatement ps, Employee employee) throws SQLException {
+				ps.setString(1, employee.getEmployeeId());
+				ps.setString(2, employee.getFirstName());
+				ps.setString(3, employee.getLastName());
+				ps.setDate(4, new java.sql.Date(employee.getDateOfJoining().getTime()));
+				ps.setString(5, employee.getDesignation());
+			}
+		});
+		LOGGER.info("Employees added in batch, number of batches :: {}, lastBatch Size :: {}", batchInsertResult.length,
+				batchInsertResult[batchInsertResult.length - 1]);
 		return employees;
 	}
 }

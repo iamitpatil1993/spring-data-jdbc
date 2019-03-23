@@ -209,4 +209,33 @@ public class EmployeeDaoImplTest extends BaseTest {
 		List<Employee> createdEmployees = employeeDao.findAllByDesignation(designation);
 		assertEquals(employeesToAdd.size(), createdEmployees.size());
 	}
+	
+	/**
+	 * Test method for
+	 * {@link com.example.spring.data.jdbc.dao.EmployeeDaoImpl#importAll(java.util.List<com.example.spring.data.jdbc.dto.Employee>)}.
+	 */
+	@Test
+	public void testImportAll() {
+		// given
+		String designation = UUID.randomUUID().toString();
+		List<Employee> employeesToAdd = new ArrayList<>(88);
+		for (int i = 0; i < 88; i++) {
+			Employee employee = new Employee();
+			employee.setFirstName(UUID.randomUUID().toString());
+			employee.setLastName(UUID.randomUUID().toString());
+			employee.setDateOfJoining(new Date());
+			employee.setDesignation(designation);
+			employeesToAdd.add(employee);
+		}
+		
+		// when
+		List<Employee> employees = employeeDao.importAll(employeesToAdd);
+	
+		// then
+		assertNotNull(employees);
+		assertFalse(employees.isEmpty());
+		assertEquals(88, employees.size());
+		List<Employee> createdEmployees = employeeDao.findAllByDesignation(designation);
+		assertEquals(employeesToAdd.size(), createdEmployees.size());
+	}
 }
