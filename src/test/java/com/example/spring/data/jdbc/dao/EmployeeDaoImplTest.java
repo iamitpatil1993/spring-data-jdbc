@@ -238,4 +238,33 @@ public class EmployeeDaoImplTest extends BaseTest {
 		List<Employee> createdEmployees = employeeDao.findAllByDesignation(designation);
 		assertEquals(employeesToAdd.size(), createdEmployees.size());
 	}
+	
+	/**
+	 * Test method for
+	 * {@link com.example.spring.data.jdbc.dao.EmployeeDaoImpl#count()}.
+	 */
+	@Test
+	public void testCount() {
+		// when
+		int count = employeeDao.count();
+	
+		// then
+		assertTrue(count > 0);
+	}
+	
+	/**
+	 * Test method for
+	 * {@link com.example.spring.data.jdbc.dao.EmployeeDaoImpl#count()}.
+	 */
+	@Test
+	public void testCountByDesignation() {
+		// given
+		String designation = "Member of Technical Staff";
+		
+		// when
+		int count = employeeDao.countByDesignation(designation);
+	
+		// then
+		assertEquals(count, 1);
+	}
 }

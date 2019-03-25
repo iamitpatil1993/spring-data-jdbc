@@ -195,4 +195,24 @@ public class EmployeeDaoImpl implements EmployeeDao {
 				batchInsertResult[batchInsertResult.length - 1]);
 		return employees;
 	}
+
+	/**
+	 * This is how we can perform aggregate queries. I.e queries which must return exact single row, and exactly one column.
+	 * We can use overloaded version if there can be multiple columns and want to use rowMapper. For example, multiple  aggregate functions. 
+	 */
+	@Override
+	public int count() {
+		return jdbcTemplate.queryForObject(SqlStore.SELECT_EMPLOYEE_COUNT, Integer.class);
+	}
+
+	/**
+	 * This one uses overload version of queryForObject with prepared statement.
+	 */
+	@Override
+	public int countByDesignation(String designation) {
+		if (designation == null) {
+			throw new InsufficientDataException("Empty designation, while fetching count");
+		}
+		return jdbcTemplate.queryForObject(SqlStore.SELECT_EMPLOYEE_COUNT_BY_DESIGNATION, Integer.class, designation);
+	}
 }

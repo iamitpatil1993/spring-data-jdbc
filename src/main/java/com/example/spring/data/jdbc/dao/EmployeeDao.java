@@ -30,5 +30,9 @@ public interface EmployeeDao {
 	public List<Employee> addAll(List<Employee> employees);
 	
 	public List<Employee> importAll(List<Employee> employees);
+	
+	public int count();
+	
+	public int countByDesignation(final String designation);
 
 }
