@@ -87,7 +87,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 		return jdbcTemplate.query(SqlStore.SELECT_EMPLOYEE_ALL, new EmployeeRowMapper());
 	}
 	
-	private class EmployeeRowMapper implements RowMapper<Employee> {
+	private static class EmployeeRowMapper implements RowMapper<Employee> {
 
 		@Override
 		public Employee mapRow(ResultSet rs, int rowNum) throws SQLException {
