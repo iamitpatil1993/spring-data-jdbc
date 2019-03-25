@@ -3,6 +3,8 @@ package com.example.spring.data.jdbc.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLType;
+import java.sql.Types;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +20,9 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import com.example.spring.data.jdbc.dto.Employee;
@@ -128,6 +132,14 @@ public class EmployeeDaoImpl implements EmployeeDao {
 		// Provide JPA stle named parameters in query. (:parameName)
 		Map<String, String> namedParameters = new HashMap<String, String>(1);
 		namedParameters.put("designation", designation);
+		
+		/*
+		 * We can use SqlParameterSource implementation to build NamedParameters, it provides fluent APIs. There are other implementations as well of this 
+		 * interface, by using which we can pass JavaBean as well.
+		 * 
+			MapSqlParameterSource parameterSource = new MapSqlParameterSource().addValue("designation", designation, Types.VARCHAR);
+			return namedParameterJdbcTemplate.query(SqlStore.SELECT_ALL_EMPLOYEE_BY_DESIGNATION, parameterSource, new EmployeeRowMapper());
+		*/
 		
 		return namedParameterJdbcTemplate.query(SqlStore.SELECT_ALL_EMPLOYEE_BY_DESIGNATION, namedParameters, new EmployeeRowMapper());
 	}
