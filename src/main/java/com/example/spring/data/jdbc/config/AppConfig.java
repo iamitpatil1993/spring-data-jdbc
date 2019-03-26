@@ -14,6 +14,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import com.example.spring.data.jdbc.support.CustomSQLErrorCodesTransalator;
+
 /**
  * Defines top application level configuration.
  * 
@@ -37,7 +39,16 @@ public class AppConfig {
 	 */
 	@Bean
 	public JdbcOperations jdbcTemplate(DataSource dataSource) {
-		return new JdbcTemplate(dataSource);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+
+		CustomSQLErrorCodesTransalator codesTransalator = new CustomSQLErrorCodesTransalator();
+		// set dataSource, so that translator can use DataSource connection, to get
+		// metadata from db, and use it to get correct instance of SqlErrorCodes instance
+		// from factory using product name.
+		codesTransalator.setDataSource(dataSource);
+
+		jdbcTemplate.setExceptionTranslator(new CustomSQLErrorCodesTransalator());
+		return jdbcTemplate;
 	}
 
 	/**
@@ -46,7 +57,14 @@ public class AppConfig {
 	 * @return
 	 */
 	@Bean
-	public NamedParameterJdbcOperations namedParameterJdbcTemplate(DataSource dataSource) {
-		return new NamedParameterJdbcTemplate(dataSource);
+	public NamedParameterJdbcOperations namedParameterJdbcTemplate(JdbcTemplate classicJdbcTemplate) {
+		// return new NamedParameterJdbcTemplate(dataSource);
+
+		// NOTE: Above NamedParameterJdbcTemplate, creates it's own JdbcTemplate (new)
+		// so, setting CustomSqlErrorCodesTranslator in jdbcTemplate(),
+		// will not work in this case.
+		// So, we can create NamedParameterJdbcTemplate from above singleton and
+		// registered JdbcTemplate in order to use CustomSqlErrorCodesTranslator
+		return new NamedParameterJdbcTemplate(classicJdbcTemplate);
 	}
 }
