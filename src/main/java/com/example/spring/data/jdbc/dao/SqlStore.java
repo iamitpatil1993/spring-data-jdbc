@@ -25,5 +25,7 @@ public abstract class SqlStore {
 	public static final String SELECT_EMPLOYEE_COUNT = "SELECT COUNT(*) FROM employee";
 	
 	public static final String SELECT_EMPLOYEE_COUNT_BY_DESIGNATION = "SELECT COUNT(*) FROM employee WHERE designation = ?";
+	
+	public static final String SELECT_EMPLOYEE_BY_NAME = "SELECT * FROM employee WHERE first_name = :firstName AND last_name = :lastName";
 			
 }

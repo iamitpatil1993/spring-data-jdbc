@@ -3,8 +3,6 @@ package com.example.spring.data.jdbc.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLType;
-import java.sql.Types;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +18,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -226,5 +224,16 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			throw new InsufficientDataException("Empty designation, while fetching count");
 		}
 		return jdbcTemplate.queryForObject(SqlStore.SELECT_EMPLOYEE_COUNT_BY_DESIGNATION, Integer.class, designation);
+	}
+
+	/**
+	 * This demonstrates the use of SqlParameterSource with BeanPropertySqlParameterSource, with NamedParameterJdbcTemplate.
+	 * It uses java bean properties to replace with jdbc named parameter.
+	 * NOTE: jdbc named parameter names must match with JavaBean properties
+	 */
+	@Override
+	public List<Employee> findAllByFirstNameAndLastName(Employee employee) {
+		SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(employee);
+		return namedParameterJdbcTemplate.query(SqlStore.SELECT_EMPLOYEE_BY_NAME, sqlParameterSource, new EmployeeRowMapper());
 	}
 }
