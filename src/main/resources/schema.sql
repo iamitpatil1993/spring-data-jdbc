@@ -7,3 +7,9 @@ CREATE	TABLE	EMPLOYEE(
 	created_date timestamp default now(), 
 	updated_date timestamp default now()
 );
+
+CREATE TABLE actor(
+	id bigint auto_increment,
+	first_name VARCHAR(40),
+	last_name VARCHAR(40)
+);
