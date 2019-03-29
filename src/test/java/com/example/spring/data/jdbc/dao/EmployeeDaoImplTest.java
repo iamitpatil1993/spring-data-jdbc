@@ -267,4 +267,24 @@ public class EmployeeDaoImplTest extends BaseTest {
 		// then
 		assertEquals(count, 1);
 	}
+	
+	
+	/**
+	 * Test method for
+	 * {@link com.example.spring.data.jdbc.dao.EmployeeDaoImpl#findAllByFirstNameAndLastName(com.example.spring.data.jdbc.dto.Employee)}.
+	 */
+	@Test
+	public void testFindAllByFirstNameAndLastName() {
+		// given
+		Employee employee = new Employee();
+		employee.setFirstName("foo");
+		employee.setLastName("bar");
+		
+		// when
+		List<Employee> employees = employeeDao.findAllByFirstNameAndLastName(employee);
+	
+		// then
+		assertNotNull(employees);
+		assertTrue(employees.size() > 0);
+	}
 }

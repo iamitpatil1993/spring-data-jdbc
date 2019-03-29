@@ -34,5 +34,7 @@ public interface EmployeeDao {
 	public int count();
 	
 	public int countByDesignation(final String designation);
+	
+	public List<Employee> findAllByFirstNameAndLastName(final Employee employee);
 
 }
