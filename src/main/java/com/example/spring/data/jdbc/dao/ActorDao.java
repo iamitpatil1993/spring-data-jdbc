@@ -23,4 +23,6 @@ public interface ActorDao {
 	
 	public List<Actor> findAll();
 	
+	public void update(Actor actor);
+	
 }

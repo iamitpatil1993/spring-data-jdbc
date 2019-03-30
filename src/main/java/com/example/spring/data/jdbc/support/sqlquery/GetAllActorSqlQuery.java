@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.example.spring.data.jdbc.support;
+package com.example.spring.data.jdbc.support.sqlquery;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

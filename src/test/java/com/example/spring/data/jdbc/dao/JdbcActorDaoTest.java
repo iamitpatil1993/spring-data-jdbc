@@ -3,13 +3,17 @@
  */
 package com.example.spring.data.jdbc.dao;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -21,10 +25,12 @@ import com.example.spring.data.jdbc.dto.Actor;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JdbcActorDaoTest extends BaseTest {
 
 	@Autowired
 	private ActorDao actorDao;
+	private static Long actorId = null;
 	
 	/**
 	 * Test method for {@link com.example.spring.data.jdbc.dao.JdbcActorDao#add(com.example.spring.data.jdbc.dto.Actor)}.
@@ -41,6 +47,8 @@ public class JdbcActorDaoTest extends BaseTest {
 		
 		assertNotNull(actorWithGeneratedPk);
 		assertNotNull(actorWithGeneratedPk.getId());
+		
+		actorId = actorWithGeneratedPk.getId();
 	}
 	
 	/**
@@ -53,5 +61,27 @@ public class JdbcActorDaoTest extends BaseTest {
 		
 		assertNotNull(actors);
 		assertTrue(actors.size() > 0);
+	}
+	
+	
+	/**
+	 * Test method for {@link com.example.spring.data.jdbc.dao.JdbcActorDao#update(com.example.spring.data.jdbc.dto.Actor)}.
+	 */
+	@Test
+	public void testUpdate() {
+		// given
+		Actor actor = new Actor();
+		actor.setFirstName("Bar");
+		actor.setLastName("Foo");
+		actor.setId(actorId);
+		
+		// when
+		actorDao.update(actor);
+		
+		// then
+		Optional<Actor> updatedActor = actorDao.findAll().stream().filter(tempActor -> actor.getId().equals(actor.getId())).findFirst();
+		assertTrue(updatedActor.isPresent());
+		assertEquals(actor.getFirstName(), updatedActor.get().getFirstName());
+		assertEquals(actor.getLastName(), updatedActor.get().getLastName());
 	}
 }

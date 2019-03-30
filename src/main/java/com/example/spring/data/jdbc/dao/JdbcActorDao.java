@@ -16,7 +16,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.stereotype.Repository;
 
 import com.example.spring.data.jdbc.dto.Actor;
-import com.example.spring.data.jdbc.support.GetAllActorSqlQuery;
+import com.example.spring.data.jdbc.support.sqlquery.GetAllActorSqlQuery;
+import com.example.spring.data.jdbc.support.sqlquery.UpdateActorSqlUpdate;
 
 /**
  * THis class makes use of SimpleJdbcInsert class of spring-data-jdbc to
@@ -37,6 +38,7 @@ public class JdbcActorDao implements ActorDao {
 	private SimpleJdbcInsertOperations simpleJdbcInsertOperations;
 	private static final String TABLE_NAME_ACTOR = "actor";
 	private GetAllActorSqlQuery getAllActorQuery = null;
+	private UpdateActorSqlUpdate updateActorSqlUpdate = null;
 	
 
 	@Autowired
@@ -55,6 +57,8 @@ public class JdbcActorDao implements ActorDao {
 		// This Classes i.e SqlQuery and it's subclasses are thread-safe, so we can declare them at class level
 		// and multiple threads can use same instances at a time.
 		getAllActorQuery = new GetAllActorSqlQuery(dataSource);
+		
+		this.updateActorSqlUpdate = new UpdateActorSqlUpdate(dataSource);
 	}
 
 	@Override
@@ -76,5 +80,11 @@ public class JdbcActorDao implements ActorDao {
 	@Override
 	public List<Actor> findAll() {
 		return getAllActorQuery.execute();
+	}
+
+	@Override
+	public void update(Actor actor) {
+		int rowsUpdated = updateActorSqlUpdate.update(actor.getFirstName(), actor.getLastName(), actor.getId());
+		LOGGER.info("Actor updated with id :: {}, rows Updated :: {}", actor.getId(), rowsUpdated);
 	}
 }
