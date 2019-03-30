@@ -1,5 +1,7 @@
 package com.example.spring.data.jdbc.dao;
 
+import java.util.List;
+
 import com.example.spring.data.jdbc.dto.Actor;
 
 /**
@@ -18,4 +20,7 @@ import com.example.spring.data.jdbc.dto.Actor;
 public interface ActorDao {
 
 	public Actor add(Actor actor);
+	
+	public List<Actor> findAll();
+	
 }

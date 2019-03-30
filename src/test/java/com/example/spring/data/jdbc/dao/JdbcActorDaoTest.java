@@ -4,6 +4,9 @@
 package com.example.spring.data.jdbc.dao;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,5 +41,17 @@ public class JdbcActorDaoTest extends BaseTest {
 		
 		assertNotNull(actorWithGeneratedPk);
 		assertNotNull(actorWithGeneratedPk.getId());
+	}
+	
+	/**
+	 * Test method for {@link com.example.spring.data.jdbc.dao.JdbcActorDao#findAll()}.
+	 */
+	@Test
+	public void testFindAll() {
+		// when
+		List<Actor> actors = actorDao.findAll();
+		
+		assertNotNull(actors);
+		assertTrue(actors.size() > 0);
 	}
 }

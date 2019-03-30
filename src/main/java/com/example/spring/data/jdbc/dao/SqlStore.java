@@ -28,4 +28,5 @@ public abstract class SqlStore {
 	
 	public static final String SELECT_EMPLOYEE_BY_NAME = "SELECT * FROM employee WHERE first_name = :firstName AND last_name = :lastName";
 			
+	public static final String SELECT_ACTOR_ALL = "SELECT * FROM actor";
 }
