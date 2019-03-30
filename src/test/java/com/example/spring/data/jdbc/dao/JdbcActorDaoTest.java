@@ -7,8 +7,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -83,5 +85,45 @@ public class JdbcActorDaoTest extends BaseTest {
 		assertTrue(updatedActor.isPresent());
 		assertEquals(actor.getFirstName(), updatedActor.get().getFirstName());
 		assertEquals(actor.getLastName(), updatedActor.get().getLastName());
+	}
+	
+	/**
+	 * Test method for {@link com.example.spring.data.jdbc.dao.JdbcActorDao#findAllByFirstNames(java.util.List<java.lang.String>)}.
+	 */
+	@Test
+	public void testFindAllByFirstNamesWithNotRecordsFound() {
+		// given
+		List<String> firstNames = new ArrayList<>(5);
+		firstNames.add(UUID.randomUUID().toString());
+		firstNames.add(UUID.randomUUID().toString());
+		firstNames.add(UUID.randomUUID().toString());
+		firstNames.add(UUID.randomUUID().toString());
+		firstNames.add(UUID.randomUUID().toString());
+		
+		// when
+		List<Actor> actors = actorDao.findAllByFirstNames(firstNames);
+		
+		assertNotNull(actors);
+		assertTrue(actors.isEmpty());
+	}
+	
+	/**
+	 * Test method for {@link com.example.spring.data.jdbc.dao.JdbcActorDao#findAllByFirstNames(java.util.List<java.lang.String>)}.
+	 */
+	@Test
+	public void testFindAllByFirstNamesWithFound() {
+		// given
+		List<String> firstNames = new ArrayList<>(4);
+		firstNames.add("Foo");
+		firstNames.add(UUID.randomUUID().toString());
+		firstNames.add(UUID.randomUUID().toString());
+		firstNames.add(UUID.randomUUID().toString());
+
+		// when
+		List<Actor> actors = actorDao.findAllByFirstNames(firstNames);
+		
+		assertNotNull(actors);
+		assertTrue(!actors.isEmpty());
+		assertEquals(1, actors.size());
 	}
 }

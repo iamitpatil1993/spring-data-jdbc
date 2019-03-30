@@ -31,4 +31,8 @@ public abstract class SqlStore {
 	public static final String SELECT_ACTOR_ALL = "SELECT * FROM actor";
 	
 	public static final String UPDATE_ACTOR_BY_ID = "UPDATE actor SET first_name = ?, last_name = ? WHERE id = ?";
+	
+	public static final String FIND_ALL_ACTOR_BY_FIRST_NAMES = "SELECT * FROM actor WHERE first_name IN (:firstNames)";
+	
+	public static final String FIND_ALL_ACTOR_BY_NAMES = "SELECT * FROM actor WHERE (first_name, last_name) IN ((:firstName, :lastName))";
 }

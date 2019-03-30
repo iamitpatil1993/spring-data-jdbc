@@ -25,4 +25,6 @@ public interface ActorDao {
 	
 	public void update(Actor actor);
 	
+	public List<Actor> findAllByFirstNames(List<String> firstNames);
+	
 }

@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.stereotype.Repository;
@@ -39,10 +40,11 @@ public class JdbcActorDao implements ActorDao {
 	private static final String TABLE_NAME_ACTOR = "actor";
 	private GetAllActorSqlQuery getAllActorQuery = null;
 	private UpdateActorSqlUpdate updateActorSqlUpdate = null;
+	private NamedParameterJdbcOperations namedParametersJdbcOperations = null; 
 	
 
 	@Autowired
-	public JdbcActorDao(DataSource dataSource) {
+	public JdbcActorDao(DataSource dataSource, NamedParameterJdbcOperations namedParametersJdbcOperations) {
 		// This simpleJdbcInsert class is thread-safe class, so we can reuse same
 		// instance for all concurrent call to singleton dao instance.
 		// Note: Here we are just passing table name, it will read table metadata and
@@ -59,6 +61,8 @@ public class JdbcActorDao implements ActorDao {
 		getAllActorQuery = new GetAllActorSqlQuery(dataSource);
 		
 		this.updateActorSqlUpdate = new UpdateActorSqlUpdate(dataSource);
+		
+		this.namedParametersJdbcOperations = namedParametersJdbcOperations; 
 	}
 
 	@Override
@@ -86,5 +90,18 @@ public class JdbcActorDao implements ActorDao {
 	public void update(Actor actor) {
 		int rowsUpdated = updateActorSqlUpdate.update(actor.getFirstName(), actor.getLastName(), actor.getId());
 		LOGGER.info("Actor updated with id :: {}, rows Updated :: {}", actor.getId(), rowsUpdated);
+	}
+
+	/**
+	 * Example to show, Passing in Lists of Values for IN Clause. 
+	 */
+	@Override
+	public List<Actor> findAllByFirstNames(List<String> firstNames) {
+		// we are passing List of primitive type as a sql argument.
+		// NOTE: This feature, i.e to able to pass list as a sql parameter for IN claue can only be used with NamedParameterJdbcOperations.
+		// because in case of positional parameters, we can't specify list as a posisitional parameter, and hence we need to create sql string dynamically usingiteration.
+		// and setting sql parameters in IN clause manually.
+		return namedParametersJdbcOperations.query(SqlStore.FIND_ALL_ACTOR_BY_FIRST_NAMES,
+				new MapSqlParameterSource("firstNames", firstNames), new ActorRowMapper());
 	}
 }
