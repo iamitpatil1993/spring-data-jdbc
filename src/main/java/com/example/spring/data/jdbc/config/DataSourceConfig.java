@@ -12,9 +12,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.jdbc.datasource.init.DataSourceInitializer;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.jndi.JndiObjectFactoryBean;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -49,6 +53,9 @@ public class DataSourceConfig {
 	
 	@Autowired
 	private Environment environment;
+	
+	@Value("classpath:schema.sql")
+	private Resource schemaSqlScriptResource;
 
 	@Bean
 	@Profile("prod")
@@ -106,6 +113,35 @@ public class DataSourceConfig {
 	@Bean
 	@Profile("test")
 	public DataSource embeddedDataSource() {
-		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript("classpath:schema.sql").build();
+		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
+	}
+
+	/**
+	 * This bean actually encapsulates, the scripts than needs to be initialized as a startup script.
+	 * @return
+	 */
+	@Bean
+	public DatabasePopulator databasePopulator() {
+		ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator(schemaSqlScriptResource);
+		databasePopulator.setIgnoreFailedDrops(true); // This sets, whether to ignore error on DROP statements in scripts, this will be useful while executing first time and tables does not exists.
+		return databasePopulator;
+	}
+	
+	/**
+	 * Using this DataSourceInitializer, we can initialize any dataSource (database) whether it is embedded or 
+	 * running on remote server.
+	 * EmbeddedDatabaes provides a way to initialize the in-memory database, but we can use this approach,
+	 * which provides consistent way to initialize any type of database, just pass DataSource instance to it.
+	 * 
+	 * @param dataSource DataSource to be initialized with init scripts.
+	 * @return
+	 */
+	@Bean
+	public DataSourceInitializer dataSourceInitializer(final DataSource dataSource) {
+		DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
+		dataSourceInitializer.setDataSource(dataSource); // Need to provide dataSource
+		dataSourceInitializer.setEnabled(true); // we can run this initializer conditionally, we can provide boolean value here from emvirnment/system variables to decide at runtime, to initialize or not.
+		dataSourceInitializer.setDatabasePopulator(databasePopulator()); // this Populator actually points to script to be executed.
+		return dataSourceInitializer;
 	}
 }
