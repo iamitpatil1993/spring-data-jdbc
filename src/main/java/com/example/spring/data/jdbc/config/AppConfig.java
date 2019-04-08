@@ -13,6 +13,9 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.example.spring.data.jdbc.support.CustomSQLErrorCodesTransalator;
 
@@ -26,6 +29,7 @@ import com.example.spring.data.jdbc.support.CustomSQLErrorCodesTransalator;
 @Configuration
 @ComponentScan(basePackages = "com.example.spring.data.jdbc")
 @Import(value = { DataSourceConfig.class })
+@EnableTransactionManagement // Enables declarative annotation based transaction.
 public class AppConfig {
 	
 	/**
@@ -66,5 +70,15 @@ public class AppConfig {
 		// So, we can create NamedParameterJdbcTemplate from above singleton and
 		// registered JdbcTemplate in order to use CustomSqlErrorCodesTranslator
 		return new NamedParameterJdbcTemplate(classicJdbcTemplate);
+	}
+	
+	/**
+	 * Defines transaction manager for jdbc. 
+	 * @param dataSource DataSoure to link/synchronize with DataSourceTransactionManager
+	 * @return
+	 */
+	@Bean
+	public PlatformTransactionManager transactionManager(DataSource dataSource) {
+		return new DataSourceTransactionManager(dataSource);
 	}
 }

@@ -2,6 +2,8 @@ DROP TABLE EMPLOYEE;
 
 DROP TABLE actor;
 
+DROP TABLE address;
+
 CREATE	TABLE	EMPLOYEE(
 	EMPLOYEE_ID	VARCHAR(36)	PRIMARY	KEY,
 	FIRST_NAME	VARCHAR(36),
@@ -12,8 +14,25 @@ CREATE	TABLE	EMPLOYEE(
 	updated_date timestamp default now()
 );
 
+DROP SEQUENCE actor_pk_generator_seq;
+CREATE SEQUENCE actor_pk_generator_seq;
+
 CREATE TABLE actor(
-	id bigint auto_increment,
+	id bigint  NOT NULL DEFAULT nextval('actor_pk_generator_seq') PRIMARY KEY,
 	first_name VARCHAR(40),
 	last_name VARCHAR(40)
+);
+
+CREATE TABLE address (
+	id VARCHAR(36) PRIMARY KEY,
+	address VARCHAR(100),
+	locality VARCHAR(40),
+	region VARCHAR(40),
+	city VARCHAR(30) NOT NULL,
+	state VARCHAR(30) NOT NULL,
+	country VARCHAR(30) NOT NULL,
+	zipcode VARCHAR(20) NOT NULL,
+	created_date TIMESTAMP DEFAULT now(),
+	updated_date TIMESTAMP DEFAULT now(),
+	employee_id VARCHAR(36)
 );
