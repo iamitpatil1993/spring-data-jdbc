@@ -3,6 +3,10 @@
  */
 package com.example.spring.data.jdbc.service;
 
+import java.security.cert.PKIXRevocationChecker.Option;
+import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.spring.data.jdbc.dao.AddressDao;
 import com.example.spring.data.jdbc.dao.EmployeeDao;
+import com.example.spring.data.jdbc.dao.InsufficientDataException;
 import com.example.spring.data.jdbc.dto.Address;
 import com.example.spring.data.jdbc.dto.Employee;
 
@@ -69,4 +74,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 				employeeWithPk.getEmployeeId(), addressWithPk.getId());
 	}
 
+	@Override
+	@Transactional(readOnly = true) // declare transaction to be read-only, throws exception if we try to perform write operation on database.
+	public Optional<Employee> findEmployeeById(String employeeId) {
+		if (employeeId == null) {
+			throw new InsufficientDataException("Empty employeeId while getting employee");
+		}
+		
+		Optional<Employee> employee = employeeDao.get(employeeId);
+		
+		if (employee.isPresent()) {
+			List<Address> addresses = addressDao.findBymployeeId(employee.get().getEmployeeId());
+			employee.get().setAddress(addresses);
+		}
+		return employee;
+	}
 }

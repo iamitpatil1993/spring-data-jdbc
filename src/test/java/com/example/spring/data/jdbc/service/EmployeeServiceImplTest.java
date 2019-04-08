@@ -3,9 +3,9 @@
  */
 package com.example.spring.data.jdbc.service;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
@@ -89,6 +89,29 @@ public class EmployeeServiceImplTest extends BaseTest {
 		Optional<Address> createdAddress = addressDao.get(address.getId());
 		assertFalse(createdAddress.isPresent());
 
+	}
+	
+	/**
+	 * Test method for
+	 * {@link com.example.spring.data.jdbc.service.EmployeeServiceImpl#findEmployeeById(java.lang.String)}.
+	 */
+	@Test
+	public void testFindEmployeeById() {
+		// given
+		Employee employee = buildDummyEmployee();
+		Address address = buildDummyAddress();
+		employeeService.registerEmployee(employee, address);
+		
+		// when
+		Optional<Employee> searchResult = employeeService.findEmployeeById(employee.getEmployeeId());
+		
+		// then
+		assertNotNull(searchResult);
+		assertTrue(searchResult.isPresent());
+		assertEquals(employee.getEmployeeId(), searchResult.get().getEmployeeId());
+		assertNotNull(searchResult.get().getAddress());
+		assertFalse(searchResult.get().getAddress().isEmpty());
+		assertTrue(searchResult.get().getAddress().size() == 1);
 	}
 
 	private Address buildDummyAddress() {

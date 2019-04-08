@@ -37,4 +37,6 @@ public abstract class SqlStore {
 	public static final String FIND_ALL_ACTOR_BY_NAMES = "SELECT * FROM actor WHERE (first_name, last_name) IN ((:firstName, :lastName))";
 	
 	public static final String FIND_ADDRESS_BY_ID = "SELECT * FROM address WHERE id = ?";
+	
+	public static final String FIND_ADDRESS_BY_EMPLOYEE_ID = "SELECT * FROM address WHERE employee_id = ?";
 }

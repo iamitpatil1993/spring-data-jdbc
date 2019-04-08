@@ -5,6 +5,7 @@ package com.example.spring.data.jdbc.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -91,5 +92,10 @@ public class JdbcAddressDao implements AddressDao {
 		address.setState(rs.getString("state"));
 		address.setZipcode(rs.getString("zipcode"));
 		return address;
+	}
+
+	@Override
+	public List<Address> findBymployeeId(String employeeId) {
+		return jdbcOperations.query(SqlStore.FIND_ADDRESS_BY_EMPLOYEE_ID, this::addressRowMapper, employeeId);
 	}
 }

@@ -5,6 +5,7 @@ package com.example.spring.data.jdbc.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author amipatil
@@ -22,6 +23,7 @@ public class Employee implements Serializable {
 	private String lastName;
 	private Date dateOfJoining;
 	private String designation;
+	private List<Address> address;
 
 	public String getEmployeeId() {
 		return employeeId;
@@ -61,5 +63,13 @@ public class Employee implements Serializable {
 
 	public void setDesignation(String designation) {
 		this.designation = designation;
+	}
+
+	public List<Address> getAddress() {
+		return address;
+	}
+
+	public void setAddress(List<Address> address) {
+		this.address = address;
 	}
 }
