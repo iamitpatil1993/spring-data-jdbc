@@ -21,6 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.example.spring.data.jdbc.BaseTest;
 import com.example.spring.data.jdbc.dao.AddressDao;
 import com.example.spring.data.jdbc.dao.EmployeeDao;
+import com.example.spring.data.jdbc.dao.InvalidDataException;
 import com.example.spring.data.jdbc.dto.Address;
 import com.example.spring.data.jdbc.dto.Employee;
 
@@ -43,9 +44,10 @@ public class EmployeeServiceImplTest extends BaseTest {
 	/**
 	 * Test method for
 	 * {@link com.example.spring.data.jdbc.service.EmployeeServiceImpl#registerEmployee(com.example.spring.data.jdbc.dto.Employee, com.example.spring.data.jdbc.dto.Address)}.
+	 * @throws InvalidDataException 
 	 */
 	@Test
-	public void testRegisterEmployee() {
+	public void testRegisterEmployee() throws InvalidDataException {
 		// given
 		Employee employee = buildDummyEmployee();
 		Address address = buildDummyAddress();
@@ -81,6 +83,8 @@ public class EmployeeServiceImplTest extends BaseTest {
 			employeeService.registerEmployee(employee, address);
 		} catch (DataIntegrityViolationException e) {
 			// Nothing to handle here
+		} catch (InvalidDataException e) {
+			// Nothing to do here 
 		}
 		// then
 		Optional<Employee> createdEmployee = employeeDao.get(employee.getEmployeeId());
@@ -94,12 +98,14 @@ public class EmployeeServiceImplTest extends BaseTest {
 	/**
 	 * Test method for
 	 * {@link com.example.spring.data.jdbc.service.EmployeeServiceImpl#findEmployeeById(java.lang.String)}.
+	 * @throws InvalidDataException 
 	 */
 	@Test
-	public void testFindEmployeeById() {
+	public void testFindEmployeeById() throws InvalidDataException {
 		// given
 		Employee employee = buildDummyEmployee();
 		Address address = buildDummyAddress();
+		
 		employeeService.registerEmployee(employee, address);
 		
 		// when
@@ -112,6 +118,29 @@ public class EmployeeServiceImplTest extends BaseTest {
 		assertNotNull(searchResult.get().getAddress());
 		assertFalse(searchResult.get().getAddress().isEmpty());
 		assertTrue(searchResult.get().getAddress().size() == 1);
+	}
+
+	/**
+	 * Checks, transaction get rollback due to our rollback rule defined for checked
+	 * exception InvalidDataException.
+	 */
+	@Test
+	public void testRegisterEmployeeWithInvalidData() {
+		// given
+		Employee employee = buildDummyEmployee();
+		Address address = buildDummyAddress();
+		address.setCity(null); // Intentionally setting invalid values to address to trigger transaction
+								// rollback due to Rollback rules.
+
+		try {
+			employeeService.registerEmployee(employee, address);
+		} catch (InvalidDataException e) {
+			e.printStackTrace();
+
+			// then
+			Optional<Employee> createdEmployee = employeeDao.get(employee.getEmployeeId());
+			assertFalse(createdEmployee.isPresent());
+		}
 	}
 
 	private Address buildDummyAddress() {

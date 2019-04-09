@@ -5,6 +5,7 @@ package com.example.spring.data.jdbc.service;
 
 import java.util.Optional;
 
+import com.example.spring.data.jdbc.dao.InvalidDataException;
 import com.example.spring.data.jdbc.dto.Address;
 import com.example.spring.data.jdbc.dto.Employee;
 
@@ -15,7 +16,7 @@ import com.example.spring.data.jdbc.dto.Employee;
 public interface EmployeeService {
 	
 	
-	public void registerEmployee(final Employee employee, final Address address);
+	public void registerEmployee(final Employee employee, final Address address) throws InvalidDataException;
 	
 	public Optional<Employee> findEmployeeById(final String employeeId);
 	

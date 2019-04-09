@@ -3,7 +3,6 @@
  */
 package com.example.spring.data.jdbc.service;
 
-import java.security.cert.PKIXRevocationChecker.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.spring.data.jdbc.dao.AddressDao;
 import com.example.spring.data.jdbc.dao.EmployeeDao;
 import com.example.spring.data.jdbc.dao.InsufficientDataException;
+import com.example.spring.data.jdbc.dao.InvalidDataException;
 import com.example.spring.data.jdbc.dto.Address;
 import com.example.spring.data.jdbc.dto.Employee;
 
@@ -48,9 +48,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	@Transactional // transaction with default TransactionDefinition details.
-	public void registerEmployee(Employee employee, Address address) {
+	@Transactional(rollbackFor = { InvalidDataException.class }) // transaction with default TransactionDefinition
+																	// details.
+																	// Defined Rollback rule to rollback transaction
+																	// when CHECKED exception
+																	// InvalidDataException occurs.
+	public void registerEmployee(Employee employee, Address address) throws InvalidDataException {
 
+		if (!isValidEmployee(employee)) {
+			throw new InvalidDataException("Invalid employee details");
+		}
 		// create employee
 		// calling DAO/repository for database operations, it will automatically
 		// participate in transaction created by this service even though
@@ -66,8 +73,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 		// create address
 		address.setEmployeeId(employeeWithPk.getEmployeeId());
+		
+		// Intentionally added this check here, instead at the start of method to just try Rollback Rules defined for InvalidDataException.
+		if (!isValidAddress(address)) {
+			throw new InvalidDataException("Invalid address detals for employee with ID :: " + employeeWithPk.getEmployeeId());
+		}
 		Address addressWithPk = addressDao.add(address);
-
 		address.setId(addressWithPk.getId());
 		employee.setEmployeeId(employeeWithPk.getEmployeeId());
 		LOGGER.info("Employee and address created with employeeId :: {}, addressId :: {}",
@@ -88,5 +99,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 			employee.get().setAddress(addresses);
 		}
 		return employee;
+	}
+	
+	private boolean isValidAddress(Address address) {
+		return address.getCity() != null && address.getState() != null && address.getCountry() != null && address.getZipcode() != null;
+	}
+
+	private boolean isValidEmployee(Employee employee) {
+		return employee.getFirstName() != null && employee.getLastName() != null;
 	}
 }
