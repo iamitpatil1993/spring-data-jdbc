@@ -3,6 +3,7 @@
  */
 package com.example.spring.data.jdbc.dao;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
@@ -97,5 +99,11 @@ public class JdbcAddressDao implements AddressDao {
 	@Override
 	public List<Address> findBymployeeId(String employeeId) {
 		return jdbcOperations.query(SqlStore.FIND_ADDRESS_BY_EMPLOYEE_ID, this::addressRowMapper, employeeId);
+	}
+
+	@Override
+	public void removeByEmployeeId(String employeeId) {
+		int rowsUpdated = jdbcOperations.update(SqlStore.DELETE_EMPLOYEE_BY_ID, employeeId);
+		LOGGER.info("Deleted address by employeeId :: {}, delete count :: {}", employeeId, rowsUpdated);
 	}
 }

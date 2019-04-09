@@ -19,5 +19,7 @@ public interface AddressDao {
 	public Optional<Address> get(final String addressId);
 	
 	public List<Address> findBymployeeId(final String employeeId);
+	
+	public void removeByEmployeeId(final String employeeId);
 
 }

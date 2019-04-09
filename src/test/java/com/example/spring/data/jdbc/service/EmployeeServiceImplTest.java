@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.NoTransactionException;
 
 import com.example.spring.data.jdbc.BaseTest;
 import com.example.spring.data.jdbc.dao.AddressDao;
@@ -141,6 +142,23 @@ public class EmployeeServiceImplTest extends BaseTest {
 			Optional<Employee> createdEmployee = employeeDao.get(employee.getEmployeeId());
 			assertFalse(createdEmployee.isPresent());
 		}
+	}
+	
+	/**
+	 * Asserts that, private/protected/default scope methods of proxy classes can not start new transaction on their own
+	 * even if those methods are annotaed with @Transactional annotation.
+	 * 
+	 * remove() of service class does not starts transaction, rather calls it's private method which is annoted with @transactional annotation,
+	 * but private method called locally can not start it's own transaction, so it will throw NoTransactionException, if we try
+	 * to access transaction.
+	 */
+	@Test(expected = NoTransactionException.class)
+	public void testRemove() {
+		// given
+		final String employeeId = UUID.randomUUID().toString();
+
+		// when
+		employeeService.remove(employeeId);
 	}
 
 	private Address buildDummyAddress() {

@@ -39,4 +39,6 @@ public abstract class SqlStore {
 	public static final String FIND_ADDRESS_BY_ID = "SELECT * FROM address WHERE id = ?";
 	
 	public static final String FIND_ADDRESS_BY_EMPLOYEE_ID = "SELECT * FROM address WHERE employee_id = ?";
+	
+	public static final String REMOVE_ADDRESS_BY_EMPLOYEE_ID = "DELETE FROM address WHERE employee_id = ?";
 }

@@ -115,4 +115,45 @@ public class EmployeeServiceImpl implements EmployeeService {
 	private boolean isValidEmployee(Employee employee) {
 		return employee.getFirstName() != null && employee.getLastName() != null;
 	}
+
+	
+	/**
+	 * Intentionally not adding @Transaactinal annotation here, rather calling private method which is annoted with @Transaactinal
+	 * annotation, this method does not starts transaction, so no transaction context exists
+	 */
+	@Override
+	public void remove(String employeeId) {
+		Employee employee = new Employee();
+		employee.setEmployeeId(employeeId);
+		
+		employeeDao.delete(employee);
+		
+		// calling private method, which is annoted with @Transaactinal annotation.
+		this.removeAddressByEmployee(employeeId);
+	}
+	
+	/**
+	 * Since 
+	 * 
+	 * 1. this method is called from local scope i.e it is called from this class and not externally,
+	 * 2. Also this method is private
+	 * 
+	 * This method can not start new transaction [but can participate in existing one if exist], so it will thow 
+	 * NoTransactionException if we try to access transaction.
+	 * @param employeeId
+	 */
+	@Transactional
+	private void removeAddressByEmployee(final String employeeId) {
+		// intentionally trying to access transaction, since transaction not exists [since this method could not create new one]
+		// it will throw exception.
+		// NOTE: This will not throw exception and will return transaction if transaction already exists and method called from 
+		// already running transaction context [no matter called from locally or externally].
+		// NOTE: Even if we change scope of this method to public, still it won't create new transaction, this method
+		// must be called from external in order to intercept, and start transaction, locally called methods are not
+		// get intercepted [no matter they are public/protected/default], so they can not start new transaction, but can
+		// participate in existing one if already exist at thread leve [Due to magic of DataSourceUtils used under the hoods by
+		// jdbcTemplate jdbc spring abstraction].
+		TransactionAspectSupport.currentTransactionStatus().hashCode();
+		addressDao.removeByEmployeeId(employeeId);
+	}
 }

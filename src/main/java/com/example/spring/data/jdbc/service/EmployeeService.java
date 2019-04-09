@@ -20,4 +20,6 @@ public interface EmployeeService {
 	
 	public Optional<Employee> findEmployeeById(final String employeeId);
 	
+	public void remove(final String employeeId);
+	
 }
