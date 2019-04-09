@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.example.spring.data.jdbc.dao.AddressDao;
 import com.example.spring.data.jdbc.dao.EmployeeDao;
@@ -77,6 +78,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 		// Intentionally added this check here, instead at the start of method to just try Rollback Rules defined for InvalidDataException.
 		if (!isValidAddress(address)) {
 			throw new InvalidDataException("Invalid address detals for employee with ID :: " + employeeWithPk.getEmployeeId());
+			/*
+			 * This is how we can programmatically rollback transaction.
+			 * 
+			 * TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			 * return;
+			 */
 		}
 		Address addressWithPk = addressDao.add(address);
 		address.setId(addressWithPk.getId());
