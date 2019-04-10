@@ -49,7 +49,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = { InvalidDataException.class }) // transaction with default TransactionDefinition
+	@Transactional(rollbackFor = { InvalidDataException.class }, timeout = 5) // transaction with default TransactionDefinition
 																	// details.
 																	// Defined Rollback rule to rollback transaction
 																	// when CHECKED exception
