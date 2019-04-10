@@ -17,6 +17,7 @@ import com.example.spring.data.jdbc.dao.AddressDao;
 import com.example.spring.data.jdbc.dao.EmployeeDao;
 import com.example.spring.data.jdbc.dao.InsufficientDataException;
 import com.example.spring.data.jdbc.dao.InvalidDataException;
+import com.example.spring.data.jdbc.dao.custom.transactionattributes.EmployeeTx;
 import com.example.spring.data.jdbc.dto.Address;
 import com.example.spring.data.jdbc.dto.Employee;
 
@@ -49,7 +50,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = { InvalidDataException.class }, timeout = 5) // transaction with default TransactionDefinition
+	@EmployeeTx // transaction with default TransactionDefinition
 																	// details.
 																	// Defined Rollback rule to rollback transaction
 																	// when CHECKED exception
@@ -142,7 +143,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	 * NoTransactionException if we try to access transaction.
 	 * @param employeeId
 	 */
-	@Transactional
+	@EmployeeTx
 	private void removeAddressByEmployee(final String employeeId) {
 		// intentionally trying to access transaction, since transaction not exists [since this method could not create new one]
 		// it will throw exception.
