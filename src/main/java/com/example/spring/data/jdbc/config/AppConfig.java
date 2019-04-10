@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,7 +30,11 @@ import com.example.spring.data.jdbc.support.CustomSQLErrorCodesTransalator;
 @Configuration
 @ComponentScan(basePackages = "com.example.spring.data.jdbc")
 @Import(value = { DataSourceConfig.class })
-@EnableTransactionManagement // Enables declarative annotation based transaction.
+@EnableTransactionManagement(order = Integer.MAX_VALUE) // Enables declarative annotation based transaction.
+														// we set order to max value, so that TransactionInterceptor aspect has lowest precedence and
+														// our application defined aspects will have more precedence and they will execute before transaction aspects.
+														// we can play with orders to twick aspect ordering as we want.
+@EnableAspectJAutoProxy // Enable annotation based AOP
 public class AppConfig {
 	
 	/**

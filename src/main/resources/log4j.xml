@@ -29,7 +29,7 @@
 	</logger>
 	
 	<logger name="org.springframework.jdbc.core">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	
 	<logger name="org.springframework.transaction">
@@ -37,7 +37,7 @@
 	</logger>
 	
 	<logger name="org.springframework.jdbc">
-		<level value="trace" />
+		<level value="info" />
 	</logger>
 	
 	
