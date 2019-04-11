@@ -34,15 +34,18 @@ public class MethodExecutionTimeCalculatorAspect {
 	}
 	
 	@Around("executionTimeCalculatorAspectPointcut()")
-	public void aroundServiceMethodInvocation(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+	public Object aroundServiceMethodInvocation(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		LOGGER.info("starting stop watch for :: {}", proceedingJoinPoint.getSignature());
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		
 		// calling upstream.
-		proceedingJoinPoint.proceed();
+		Object returnvalue = proceedingJoinPoint.proceed();
 		
 		stopWatch.stop();
 		LOGGER.info("Time taken by {} is :: {} miliseconds", proceedingJoinPoint.getSignature(), stopWatch.getTotalTimeMillis());
+		
+		// [Important ]we need to catch and return whatever uostream returns, otherwise return value won't be returned to called, it will get lost.
+		return returnvalue;
 	}
 }

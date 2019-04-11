@@ -103,7 +103,7 @@ public class JdbcAddressDao implements AddressDao {
 
 	@Override
 	public void removeByEmployeeId(String employeeId) {
-		int rowsUpdated = jdbcOperations.update(SqlStore.DELETE_EMPLOYEE_BY_ID, employeeId);
+		int rowsUpdated = jdbcOperations.update(SqlStore.REMOVE_ADDRESS_BY_EMPLOYEE_ID, employeeId);
 		LOGGER.info("Deleted address by employeeId :: {}, delete count :: {}", employeeId, rowsUpdated);
 	}
 }

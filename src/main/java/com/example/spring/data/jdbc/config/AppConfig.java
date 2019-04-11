@@ -17,6 +17,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.support.TransactionOperations;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.example.spring.data.jdbc.support.CustomSQLErrorCodesTransalator;
 
@@ -85,5 +87,31 @@ public class AppConfig {
 	@Bean
 	public PlatformTransactionManager transactionManager(DataSource dataSource) {
 		return new DataSourceTransactionManager(dataSource);
+	}
+	
+	/**
+	 * Creates TransactionTemplate with default configuration, which will be shared
+	 * by all services. Sample template can be used even if
+	 * PlatformTransactionManager changes.
+	 * 
+	 * @param platformTransactionManager This platform transaction can be any
+	 *                                   implememtation like JPA, Hibernate, JDBC
+	 *                                   but transaction template code remains
+	 *                                   consistent. No actual code changes required
+	 *                                   in our services using TrannsactionTemplate
+	 *                                   even though PlatformTransactionManager
+	 *                                   implementation changes.
+	 * 
+	 * @return TransactionTemplate [singleton] with default configuration, which
+	 *         will be shared by all services. If service needs TransactionTemplate
+	 *         with different configuration, create local instance of
+	 *         TransactionTemplate with desired configuration.
+	 */
+	@Bean
+	public TransactionOperations transactionTemplate(PlatformTransactionManager platformTransactionManager) {
+		TransactionTemplate transactionTemplate = new TransactionTemplate(platformTransactionManager);
+		transactionTemplate.setReadOnly(false);
+		transactionTemplate.setTimeout(30);
+		return transactionTemplate;
 	}
 }

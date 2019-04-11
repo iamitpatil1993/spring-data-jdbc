@@ -9,6 +9,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -26,10 +28,12 @@ import com.example.spring.data.jdbc.dto.Employee;
  *
  */
 
-@Service // Service annotation is just specialization of @Component annotation and does
+@Service
+@Qualifier("declarativeTx")
+// Service annotation is just specialization of @Component annotation and does
 // not adds anything special. We can replace it with @Component annotation and
 // can have same effect. It's only for naming purpose
-public class EmployeeServiceImpl implements EmployeeService {
+public class EmployeeServiceImpl extends AbstractEmployeeServiceImpl {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
@@ -108,15 +112,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 		}
 		return employee;
 	}
-	
-	private boolean isValidAddress(Address address) {
-		return address.getCity() != null && address.getState() != null && address.getCountry() != null && address.getZipcode() != null;
-	}
-
-	private boolean isValidEmployee(Employee employee) {
-		return employee.getFirstName() != null && employee.getLastName() != null;
-	}
-
 	
 	/**
 	 * Intentionally not adding @Transaactinal annotation here, rather calling private method which is annoted with @Transaactinal
