@@ -44,14 +44,17 @@ public class ProgrammaticTxEmployeeServiceImpl extends AbstractEmployeeServiceIm
 	private EmployeeDao employeeDao;
 
 	private AddressDao addressDao;
+	
+	private AddressService addressService;
 
 	@Autowired
 	public ProgrammaticTxEmployeeServiceImpl(TransactionOperations transactionOperations, EmployeeDao employeeDao,
-			AddressDao addressDao, PlatformTransactionManager transactionManager) {
+			AddressDao addressDao, PlatformTransactionManager transactionManager, AddressService addressService) {
 		this.transactionOperations = transactionOperations;
 		this.employeeDao = employeeDao;
 		this.addressDao = addressDao;
 		this.transactionManager = transactionManager;
+		this.addressService = addressService;
 	}
 
 	/**
@@ -67,6 +70,7 @@ public class ProgrammaticTxEmployeeServiceImpl extends AbstractEmployeeServiceIm
 
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				LOGGER.info("employee service :: {}", status);
 				if (!isValidEmployee(employee)) {
 					LOGGER.error("Invalid employee details, {}", new InvalidDataException("Invalid employee details"));
 					status.setRollbackOnly();
@@ -85,7 +89,11 @@ public class ProgrammaticTxEmployeeServiceImpl extends AbstractEmployeeServiceIm
 					status.setRollbackOnly();
 					return;
 				}
-				Address addressWithPk = addressDao.add(address);
+				
+				// calling other service method which executes in transactiontemplate.execute(), but still participate in current
+				// transaction and does not start new transaction.
+				// so, programmatic transactions also get propagated (since they are attached to thead)
+				Address addressWithPk = addressService.create(address);
 				address.setId(addressWithPk.getId());
 				employee.setEmployeeId(employeeWithPk.getEmployeeId());
 
