@@ -76,12 +76,13 @@ public class JdbcActorDaoTest extends BaseTest {
 		actor.setFirstName("Bar");
 		actor.setLastName("Foo");
 		actor.setId(actorId);
+		System.out.println("actorId :: " + actorId);
 		
 		// when
 		actorDao.update(actor);
 		
 		// then
-		Optional<Actor> updatedActor = actorDao.findAll().stream().filter(tempActor -> actor.getId().equals(actor.getId())).findFirst();
+		Optional<Actor> updatedActor = actorDao.findAll().stream().filter(tempActor -> tempActor.getId().equals(actor.getId())).findFirst();
 		assertTrue(updatedActor.isPresent());
 		assertEquals(actor.getFirstName(), updatedActor.get().getFirstName());
 		assertEquals(actor.getLastName(), updatedActor.get().getLastName());
