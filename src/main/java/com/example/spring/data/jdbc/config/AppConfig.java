@@ -3,8 +3,11 @@
  */
 package com.example.spring.data.jdbc.config;
 
+import java.sql.SQLException;
+
 import javax.sql.DataSource;
 
+import org.h2.tools.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -113,5 +116,19 @@ public class AppConfig {
 		transactionTemplate.setReadOnly(false);
 		transactionTemplate.setTimeout(30);
 		return transactionTemplate;
+	}
+	
+	/**
+	 * This bean creates web server which we can access from browser at
+	 * localhost:8982 to view H2 in embedded database content. NOTE: This bean needs
+	 * to be declared in this JVM only in order to access h2. This embedded db can
+	 * be accessed using url -> jdbc:h2:mem:testdb
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	@Bean(initMethod = "start", destroyMethod = "stop")
+	public Server h2WebServer() throws SQLException {
+		return Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082");
 	}
 }
