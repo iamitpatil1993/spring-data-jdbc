@@ -24,6 +24,8 @@ import org.springframework.jndi.JndiObjectFactoryBean;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import liquibase.integration.spring.SpringLiquibase;
+
 /**
  * <p>
  * This java config class defines spring data source configurations. (Different
@@ -120,7 +122,7 @@ public class DataSourceConfig {
 	 * This bean actually encapsulates, the scripts than needs to be initialized as a startup script.
 	 * @return
 	 */
-	@Bean
+	//@Bean
 	public DatabasePopulator databasePopulator() {
 		ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator(schemaSqlScriptResource);
 		databasePopulator.setIgnoreFailedDrops(true); // This sets, whether to ignore error on DROP statements in scripts, this will be useful while executing first time and tables does not exists.
@@ -136,12 +138,29 @@ public class DataSourceConfig {
 	 * @param dataSource DataSource to be initialized with init scripts.
 	 * @return
 	 */
-	@Bean
+	//@Bean
 	public DataSourceInitializer dataSourceInitializer(final DataSource dataSource) {
 		DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
 		dataSourceInitializer.setDataSource(dataSource); // Need to provide dataSource
 		dataSourceInitializer.setEnabled(true); // we can run this initializer conditionally, we can provide boolean value here from emvirnment/system variables to decide at runtime, to initialize or not.
 		dataSourceInitializer.setDatabasePopulator(databasePopulator()); // this Populator actually points to script to be executed.
 		return dataSourceInitializer;
+	}
+
+	/**
+	 * Executes liquibase application startup. This bean is spring's wrapper over
+	 * liquibase and we can do everything that liquibase provides using this spring
+	 * bean.
+	 * 
+	 * @param dataSource DataSource on which liquibase needs to be executed.
+	 * @return
+	 */
+	@Bean
+	public SpringLiquibase springLiquibase(final DataSource dataSource) {
+		SpringLiquibase liquibase = new SpringLiquibase();
+		liquibase.setDataSource(dataSource); // provide dataSource on which to execute
+		liquibase.setChangeLog("classpath:db/changelog/db.changelog-master.xml"); // provide top/master changelog file.
+		// there are lots of configurations we can set like context, rollback script etc.
+		return liquibase;
 	}
 }
