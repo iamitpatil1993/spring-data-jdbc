@@ -15,7 +15,7 @@ import com.example.spring.data.jdbc.config.AppConfig;
  */
 
 @ContextConfiguration(classes = AppConfig.class, loader = AnnotationConfigContextLoader.class)
-@ActiveProfiles(profiles = "test")
+//@ActiveProfiles(profiles = "${spring.profiles.active}")
 public class BaseTest {
 
 	// Nothing to do here for now.
